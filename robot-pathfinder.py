@@ -13,7 +13,7 @@ cell_size = width // grid_size
 # grid setup (0 = free, 1 = obstacle)
 grid = np.zeros((grid_size, grid_size))
 grid[2, 3] = 1  # adding obstacle at (2,3)
-grid[5, 0:6] = 1  # adding obstacles from (5,5) to (5,7)
+grid[5, 0:6] = 1  # adding obstacles from (5,0) to (5,6)
 
 # start and finish positions
 start = (0, 0)
@@ -72,7 +72,7 @@ def a_star(grid, start, goal):
         for dx, dy in neighbours:
             neighbour = current[0] + dx, current[1] + dy
             if 0 <= neighbour[0] < grid_size and 0 <= neighbour[1] < grid_size:
-                if grid[neighbour[1]][neighbour[0]] == 1:  # Fixed: Proper grid indexing
+                if grid[neighbour[1]][neighbour[0]] == 1:
                     continue  # skip obstacles
                 tentative_g = gscore[current] + 1
                 if neighbour in close_set and tentative_g >= gscore.get(neighbour, 0):
@@ -84,19 +84,30 @@ def a_star(grid, start, goal):
                     heappush(open_set, (fscore[neighbour], neighbour))
     return []  # no path found
 
+# Initialize robot position and path
+robot_pos = list(start)
+path = a_star(grid, start, finish)
+path_index = 0
+frame_count = 0
+
 # main game loop
 running = True
-path = a_star(grid, start, finish)
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    # Move robot every 30 frames (0.5 seconds at 60 FPS)
+    frame_count += 1
+    if frame_count % 30 == 0 and path and path_index < len(path):
+        robot_pos = list(path[path_index])
+        path_index += 1
+
+    # Drawing
     screen.fill((255, 255, 255))  # white background
     draw_grid()
     draw_path(path)
-    draw_robot(start)
+    draw_robot(robot_pos)  # Draw robot at current position
     pygame.display.flip()
     clock.tick(60)
 
