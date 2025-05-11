@@ -13,7 +13,7 @@ cell_size = width // grid_size
 # grid setup (0 = free, 1 = obstacle)
 grid = np.zeros((grid_size, grid_size))
 grid[2, 3] = 1  # adding obstacle at (2,3)
-grid[5, 5:8] = 1  # adding obstacles from (5,5) to (5,7)
+grid[5, 0:6] = 1  # adding obstacles from (5,5) to (5,7)
 
 # start and finish positions
 start = (0, 0)
